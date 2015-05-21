@@ -17,6 +17,7 @@ alire = root.get_element_by_id('alire')
 
 data = []
 
+
 for heading in alire.cssselect('h4'):
     party = heading.text_content().strip()
 
@@ -24,6 +25,7 @@ for heading in alire.cssselect('h4'):
         member = {
             'party': party,
             'area': '',  # There are no areas here.
+            'term_id': 2013,  # Let's use the year it starts as there doesn't seem to be a name.
             }
         member_a = li.find('a')
 
@@ -62,3 +64,4 @@ for heading in alire.cssselect('h4'):
 
 import scraperwiki
 scraperwiki.sqlite.save(unique_keys=['name'], data=data)
+scraperwiki.sqlite.save(unique_keys=['id'], data=[{'id': 2013, 'name': '2013-1018', 'start_date': 2013, 'end_date': 2018}], table_name='terms')
