@@ -21,7 +21,10 @@ for heading in alire.cssselect('h4'):
     party = heading.text_content().strip()
 
     for li in heading.getnext().cssselect('li'):
-        member = {'party': party}
+        member = {
+            'party': party,
+            'area': '',  # There are no areas here.
+            }
         member_a = li.find('a')
 
         member['name'] = member_a.text.strip()
@@ -43,35 +46,19 @@ for heading in alire.cssselect('h4'):
         js = '(function() {{{}}})()'.format(' '.join(jslines))
         member['email'] = unescape(execjs.eval(js))
 
+        img = member_root.cssselect('.itemFullText')[0].cssselect('img')[0]
+
+        member['image'] = urljoin(member['details_url'], img.get('src'))
+
+        # There's something which looks like a numerical ID in the details_url
+        member['id'] = details_url.rsplit('/', 1)[-1].split('-', 1)[0]
+
         data.append(member)
 
-# This is a template for a Python scraper on morph.io (https://morph.io)
-# including some code snippets below that you should find helpful
 
-# import scraperwiki
-# import lxml.html
-#
-# # Read in a page
-# html = scraperwiki.scrape("http://foo.com")
-#
-# # Find something on the page using css selectors
-# root = lxml.html.fromstring(html)
-# root.cssselect("div[align='left']")
-#
-# # Write out to the sqlite database using scraperwiki library
-# scraperwiki.sqlite.save(unique_keys=['name'], data={"name": "susan", "occupation": "software developer"})
-#
-# # An arbitrary query against the database
-# scraperwiki.sql.select("* from data where 'name'='peter'")
-
-# You don't have to do things with the ScraperWiki and lxml libraries.
-# You can use whatever libraries you want: https://morph.io/documentation/python
-# All that matters is that your final data is written to an SQLite database
-# called "data.sqlite" in the current working directory which has at least a table
-# called "data".
-
-
-############################
+##########################################################################################
+# Actually saving the data is down here to help me add and remove it repeatedly with Git #
+##########################################################################################
 
 import scraperwiki
 scraperwiki.sqlite.save(unique_keys=['name'], data=data)
