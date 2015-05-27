@@ -64,4 +64,4 @@ for heading in alire.cssselect('h4'):
 
 import scraperwiki
 scraperwiki.sqlite.save(unique_keys=['name'], data=data)
-scraperwiki.sqlite.save(unique_keys=['id'], data=[{'id': 2013, 'name': '2013-1018', 'start_date': 2013, 'end_date': 2018}], table_name='terms')
+scraperwiki.sqlite.save(unique_keys=['id'], data=[{'id': 2013, 'name': '2013-1018', 'start_date': '2013-02-21', 'end_date': 2018}], table_name='terms')
