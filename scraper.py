@@ -4,6 +4,7 @@ from urlparse import urljoin
 import requests
 import lxml.html
 import execjs
+from slugify import slugify
 
 from HTMLParser import HTMLParser
 unescape = HTMLParser().unescape
@@ -17,7 +18,6 @@ alire = root.get_element_by_id('alire')
 
 data = []
 
-
 for heading in alire.cssselect('h4'):
     party = heading.text_content().strip()
 
@@ -29,12 +29,13 @@ for heading in alire.cssselect('h4'):
             }
         member_a = li.find('a')
 
-        member['name'] = member_a.text.strip()
         details_url = member['details_url'] = urljoin(source_url, member_a.get('href'))
 
         member_resp = requests.get(details_url)
         member_root = lxml.html.fromstring(member_resp.text)
 
+        name = member['name'] = member_root.cssselect('.itemTitle')[0].text_content().strip()
+        member['id'] = slugify(name)
         mailto_script = member_root.xpath("//h4[contains(., 'Contact Mail')]")[0].getnext().getchildren()[0].text_content()
 
         # Get hold of the lines of javascript which aren't fiddling with the DOM
@@ -52,11 +53,42 @@ for heading in alire.cssselect('h4'):
 
         member['image'] = urljoin(member['details_url'], img.get('src'))
 
-        # There's something which looks like a numerical ID in the details_url
-        member['id'] = details_url.rsplit('/', 1)[-1].split('-', 1)[0]
-
         data.append(member)
 
+
+legislatures_data = [
+    {'id': 2013, 'name': '2013-1018', 'start_date': '2013-02-21', 'end_date': 2018},
+    ]
+
+
+# Get some historic data too.
+old_legislatures = (
+    'http://www.conseil-national.mc/index.php/histoire-du-conseil-national/les-elus-de-la-legislature-2008-2013',
+    'http://www.conseil-national.mc/index.php/histoire-du-conseil-national/les-elus-de-la-legislature-2003-2008',
+    )
+
+for legislature_url in old_legislatures:
+    start_date, end_date = legislature_url.rsplit('-', 2)[1:]
+
+    legislatures_data.append({
+            'id': start_date,
+            'start_date': start_date,
+            'end_date': end_date,
+            'name': '{}-{}'.format(start_date, end_date),
+    })
+
+    resp = requests.get(legislature_url)
+    root = lxml.html.fromstring(resp.text)
+
+    for tr in root.cssselect('table')[0].cssselect('tr'):
+        member = {}
+
+        member['image'] = urljoin(legislature_url, tr.cssselect('img')[0].get('src'))
+        name = member['name'] = tr[1].getchildren()[0].text_content().strip()
+        member['id'] = slugify(name)
+        member['term_id'] = start_date
+
+        data.append(member)
 
 ##########################################################################################
 # Actually saving the data is down here to help me add and remove it repeatedly with Git #
@@ -64,4 +96,4 @@ for heading in alire.cssselect('h4'):
 
 import scraperwiki
 scraperwiki.sqlite.save(unique_keys=['name'], data=data)
-scraperwiki.sqlite.save(unique_keys=['id'], data=[{'id': 2013, 'name': '2013-1018', 'start_date': '2013-02-21', 'end_date': 2018}], table_name='terms')
+scraperwiki.sqlite.save(unique_keys=['id'], data=legislatures_data, table_name='terms')
