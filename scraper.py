@@ -90,10 +90,11 @@ for legislature_url in old_legislatures:
 
         data.append(member)
 
+
 ##########################################################################################
 # Actually saving the data is down here to help me add and remove it repeatedly with Git #
 ##########################################################################################
 
 import scraperwiki
-scraperwiki.sqlite.save(unique_keys=['name'], data=data)
+scraperwiki.sqlite.save(unique_keys=['name', 'term_id'], data=data)
 scraperwiki.sqlite.save(unique_keys=['id'], data=legislatures_data, table_name='terms')
