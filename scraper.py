@@ -88,7 +88,10 @@ for legislature_url in old_legislatures:
         member['id'] = slugify(name)
         member['term_id'] = start_date
 
-        member['party'] = tr[1][1].getchildren()[0].getchildren()[0].tail.split('Membre du groupe politique ')[1]
+        try:
+            member['party'] = tr[1][1].getchildren()[0].text_content().split(u'Membre du groupe politique ')[1]
+        except:
+            print u"No party for {} in {}".format(member['name'], member['term_id'])
 
         data.append(member)
 
