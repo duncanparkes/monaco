@@ -91,7 +91,7 @@ for legislature_url in old_legislatures:
         try:
             member['party'] = tr[1][1].getchildren()[0].text_content().split(u'Membre du groupe politique ')[1]
         except:
-            print u"No party for {} in {}".format(member['name'], member['term_id'])
+            print repr(u"No party for {} in {}".format(member['name'], member['term_id']))
 
         data.append(member)
 
