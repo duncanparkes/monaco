@@ -90,7 +90,7 @@ for legislature_url in old_legislatures:
         member['term_id'] = start_date
 
         try:
-            member['party'] = tr[1][1].getchildren()[0].text_content().split(u'Membre du groupe politique ')[1]
+            member['party'] = tr[1][1].getchildren()[0].text_content().split(u'Membre du groupe politique ')[1].strip()
         except:
             print repr(u"No party for {} in {}".format(member['name'], member['term_id']))
 
