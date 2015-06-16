@@ -93,6 +93,13 @@ for legislature_url in old_legislatures:
         except:
             print repr(u"No party for {} in {}".format(member['name'], member['term_id']))
 
+        if member.get('party') == u"UNAM (Union Nationale pour l'Avenir de Monaco), UpM (Union pour Monaco)":
+            member['party'] = u"UNAM Union Nationale pour l'Avenir de Monaco UpM (Union pour Monaco)"
+
+        if member.get('party') == u"UP Union pour la PrincipautéUpM (Union pour Monaco)":
+            member['party'] = u"UP Union pour la Principauté UpM (Union pour Monaco)"
+
+
         data.append(member)
 
 
