@@ -92,7 +92,14 @@ for legislature_url in old_legislatures:
         try:
             member['party'] = tr[1][1].getchildren()[0].text_content().split(u'Membre du groupe politique ')[1].strip()
         except:
-            print repr(u"No party for {} in {}".format(member['name'], member['term_id']))
+            try:
+                if tr[1][1].getchildren()[0].getchildren()[0].tail.strip() == u'SE Sans Etiquette':
+                    member['party'] = 'Independent'
+            except:
+                if member['id'] == u'Stephane-VALERI':
+                    member['party'] = u'UP (Union pour la Principauté), appartenant à la majorité UpM (Union pour Monaco)'
+                else:
+                    print repr(u"No party for {} in {}".format(member['name'], member['term_id']))
 
         if member.get('party') == u"UNAM (Union Nationale pour l'Avenir de Monaco), UpM (Union pour Monaco)":
             member['party'] = u"UNAM Union Nationale pour l'Avenir de Monaco UpM (Union pour Monaco)"
